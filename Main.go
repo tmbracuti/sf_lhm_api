@@ -29,6 +29,6 @@ func main() {
 
 	router := NewRouter()
 	fmt.Printf("serving on %s\n", endPoint[1:])
-	//logger.Fatal(http.ListenAndServe(endPoint, router)) //non-tls
-	logger.Fatal(http.ListenAndServeTLS(endPoint, "cert.pem", "key.pem", router)) //tls mode
+	logger.Fatal(http.ListenAndServe(endPoint, router)) //non-tls
+	//logger.Fatal(http.ListenAndServeTLS(endPoint, "cert.pem", "key.pem", router)) //tls mode
 }
