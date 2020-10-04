@@ -16,7 +16,7 @@ func main() {
 	if err != nil {
 		log.Print(err)
 		log.Fatal("could not open log-file sf_lhm_api.log, exiting.")
-		os.Exit(1)
+		//os.Exit(1)
 	}
 
 	logger = log.New(logFile, "sf_lhm_api:", log.Ldate|log.Ltime|log.Lshortfile)

@@ -20,6 +20,13 @@ var routes = Routes{
 		"/provisioning/v1/addprimephone",
 		AddPrimePhone,
 	},
+//GetTelephoneNumbersByGUID
+	Route{
+		"GetTelephoneNumbersByGUID",
+		"POST",
+		"/tips/GetTelephoneNumbersByGUID",
+		GetTelephoneNumbersByGUID,
+	},
 
 	Route{
 		"AddVoiceMail",
@@ -87,6 +94,36 @@ var routes = Routes{
 		"POST",
 		"/api/x_lmlmc_ent_phone/prim_phone_post.do",
 		PrimePhoneResult,
+	},
+
+
+	Route{
+		"ChangePhone",
+		"POST",
+		"/api/x_lmlmc_ent_phone/change_phone_post",
+		ChangePhoneResult,
+	},
+
+	Route{
+		"DellBulkReport",
+		"POST",
+		"/api/dusal/starfish_inbound/bulk_load",
+		DellBulkHandler,
+	},
+
+	// - /api/sn_sc/servicecatalog/items/d92de7a4db120cd035453efd7c96191f/order_now
+	Route{
+		"TermCB",
+		"POST",
+		"/api/sn_sc/servicecatalog/items/d92de7a4db120cd035453efd7c96191f/order_now",
+		TerminationCB,
+	},
+
+	Route{
+		"NewHireCB",
+		"POST",
+		"/api/sn_sc/servicecatalog/items/19682786db3408d0f101307f7c96191e/order_now",
+		NewHireCB,
 	},
 
 	Route{

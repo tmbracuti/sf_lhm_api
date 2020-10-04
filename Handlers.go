@@ -96,6 +96,26 @@ func ShowAxl(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+
+func GetTelephoneNumbersByGUID(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	if err != nil {
+		panic(err)
+	}
+	if err := r.Body.Close(); err != nil {
+		panic(err)
+	}
+
+	bodyStr := string(body)
+	fmt.Println("got ShowAxl: " + bodyStr)
+
+	fmt.Println("returning canned response from file: GetTelephoneNumbersByGUID_Response.txt")
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	b, _ := ioutil.ReadFile("GetTelephoneNumbersByGUID_Response.txt")
+	w.Write(b)
+}
+
 //also for amex cookie testing
 func Authenticate(w http.ResponseWriter, r *http.Request) {
 
@@ -293,6 +313,38 @@ func Sponsored(w http.ResponseWriter, r *http.Request) {
 
 }
 
+
+func DellBulkHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	if err != nil {
+		panic(err)
+	}
+	if err := r.Body.Close(); err != nil {
+		panic(err)
+	}
+
+	bodyStr := string(body)
+	fmt.Println("got BULK REPORT:\n" + bodyStr)
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func ChangePhoneResult(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	if err != nil {
+		panic(err)
+	}
+	if err := r.Body.Close(); err != nil {
+		panic(err)
+	}
+
+	bodyStr := string(body)
+	fmt.Println("got change_phone_post POST: " + bodyStr)
+
+	w.WriteHeader(http.StatusOK)
+}
+
+
 func PrimePhoneResult(w http.ResponseWriter, r *http.Request) {
 
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
@@ -309,6 +361,56 @@ func PrimePhoneResult(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 }
+
+//TerminationCB
+func TerminationCB(w http.ResponseWriter, r *http.Request) {
+
+	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	if err != nil {
+		panic(err)
+	}
+	if err := r.Body.Close(); err != nil {
+		panic(err)
+	}
+
+	bodyStr := string(body)
+	fmt.Println("got NewHireCB POST: " + bodyStr)
+	logger.Printf("NewHireCB - %v\n", http.StatusOK)
+	w.WriteHeader(http.StatusOK)
+	res := HandlingResult{"dummyId", true, "Term response", make(map[string]string)}
+	b, err := json.Marshal(res)
+	if err == nil {
+		pStr := string(b)
+		fmt.Println("replying with: " + pStr)
+		w.Write([]byte(pStr))
+	}
+
+}
+
+func NewHireCB(w http.ResponseWriter, r *http.Request) {
+
+	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	if err != nil {
+		panic(err)
+	}
+	if err := r.Body.Close(); err != nil {
+		panic(err)
+	}
+
+	bodyStr := string(body)
+	fmt.Println("got NewHireCB POST: " + bodyStr)
+	logger.Printf("NewHireCB - %v\n", http.StatusOK)
+	w.WriteHeader(http.StatusOK)
+	res := HandlingResult{"dummyId", true, "dummy response", make(map[string]string)}
+	b, err := json.Marshal(res)
+	if err == nil {
+		pStr := string(b)
+		fmt.Println("replying with: " + pStr)
+		w.Write([]byte(pStr))
+	}
+
+}
+
 
 //LHM
 func AddPrimePhone(w http.ResponseWriter, r *http.Request) {
