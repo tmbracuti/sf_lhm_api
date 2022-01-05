@@ -14,7 +14,7 @@ type Route struct {
 type Routes []Route
 
 var routes = Routes{
-
+	//mock of Avaya APCS snow callback
 	Route{
 		"AvayaSNOWCallback",
 		"POST",
