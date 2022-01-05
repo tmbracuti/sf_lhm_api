@@ -4,13 +4,25 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"sort"
 	"strings"
 	"time"
 )
+
+var emp_cache []byte
+
+type MegaEmployee struct {
+	number string `json:"number"`
+}
+
+type MegaEmployeeList struct {
+	listing []MegaEmployee
+}
 
 //for reach test
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
@@ -96,6 +108,20 @@ func ShowAxl(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func GetMegaEmployees(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	fmt.Printf("getting employees for tenant %s\n", vars["tenantId"])
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+
+	if emp_cache == nil {
+		emp_cache, _ = ioutil.ReadFile("employees.txt")
+	}
+
+	w.Write(emp_cache)
+
+}
 
 func GetTelephoneNumbersByGUID(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
@@ -143,6 +169,25 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	reply := "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"> <soapenv:Body>      <ns:updateRemoteDestinationResponse xmlns:ns=\"http://www.cisco.com/AXL/API/10.5\">         <return>{54B0F5A1-955D-490F-981B-081EF9B7BD80}</return>      </ns:updateRemoteDestinationResponse>   </soapenv:Body></soapenv:Envelope>"
 	w.Write([]byte(reply))
+}
+
+func AddMegaEmployee(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	fmt.Printf("adding employee for tenant %s\n", vars["tenantId"])
+	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	if err != nil {
+		panic(err)
+	}
+	if err := r.Body.Close(); err != nil {
+		panic(err)
+	}
+	bodyStr := string(body)
+	fmt.Println("got AddMegaEmployee: " + bodyStr)
+
+	w.WriteHeader(http.StatusCreated)
+
+	w.Write([]byte(bodyStr))
+
 }
 
 //LHM
@@ -313,6 +358,22 @@ func Sponsored(w http.ResponseWriter, r *http.Request) {
 
 }
 
+//DellBulkSummaryHandler
+func DellBulkSummaryHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	if err != nil {
+		panic(err)
+	}
+	if err := r.Body.Close(); err != nil {
+		panic(err)
+	}
+
+	bodyStr := string(body)
+	fmt.Println("got summary REPORT:\n" + bodyStr)
+	fmt.Println("----------------------------------------------------------------------------")
+
+	w.WriteHeader(http.StatusOK)
+}
 
 func DellBulkHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
@@ -325,6 +386,7 @@ func DellBulkHandler(w http.ResponseWriter, r *http.Request) {
 
 	bodyStr := string(body)
 	fmt.Println("got BULK REPORT:\n" + bodyStr)
+	fmt.Println("----------------------------------------------------------------------------")
 
 	w.WriteHeader(http.StatusOK)
 }
@@ -344,7 +406,6 @@ func ChangePhoneResult(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-
 func PrimePhoneResult(w http.ResponseWriter, r *http.Request) {
 
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
@@ -357,8 +418,19 @@ func PrimePhoneResult(w http.ResponseWriter, r *http.Request) {
 
 	bodyStr := string(body)
 	fmt.Println("got prim_phone_post.do POST: " + bodyStr)
-
+	// Loop through headers
+	var request []string
+	for name, headers := range r.Header {
+		name = strings.ToLower(name)
+		for _, h := range headers {
+			request = append(request, fmt.Sprintf("%v: %v", name, h))
+		}
+	}
+	hlist := strings.Join(request, "\n")
+	fmt.Println("headers: " + hlist)
 	w.WriteHeader(http.StatusOK)
+	pStr := "{\"reply\":\"OK\"}"
+	w.Write([]byte(pStr))
 
 }
 
@@ -410,9 +482,30 @@ func NewHireCB(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+func AvayaSNOWCallback(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	if err != nil {
+		panic(err)
+	}
+	if err := r.Body.Close(); err != nil {
+		panic(err)
+	}
+	rids, ok := r.URL.Query()["requestID"]
+	if !ok || len(rids[0]) < 1 {
+		log.Println("Url Param 'key' is missing")
+		return
+	}
 
+	rid := rids[0]
+	fmt.Println("got rid value: " + rid)
+	bodyStr := string(body)
+	logger.Printf("in: %s\n", bodyStr)
+	fmt.Println("got: " + bodyStr)
 
-//LHM
+	w.WriteHeader(http.StatusOK)
+}
+
+// LHM
 func AddPrimePhone(w http.ResponseWriter, r *http.Request) {
 	logger.Printf("START HANDLING ADDPRIMEPHONE\n")
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))

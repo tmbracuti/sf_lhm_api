@@ -14,13 +14,21 @@ type Route struct {
 type Routes []Route
 
 var routes = Routes{
+
+	Route{
+		"AvayaSNOWCallback",
+		"POST",
+		"/api/asiam/starfish_response",
+		AvayaSNOWCallback,
+	},
+
 	Route{
 		"AddPrimePhone",
 		"POST",
 		"/provisioning/v1/addprimephone",
 		AddPrimePhone,
 	},
-//GetTelephoneNumbersByGUID
+	//GetTelephoneNumbersByGUID
 	Route{
 		"GetTelephoneNumbersByGUID",
 		"POST",
@@ -96,7 +104,6 @@ var routes = Routes{
 		PrimePhoneResult,
 	},
 
-
 	Route{
 		"ChangePhone",
 		"POST",
@@ -109,6 +116,13 @@ var routes = Routes{
 		"POST",
 		"/api/dusal/starfish_inbound/bulk_load",
 		DellBulkHandler,
+	},
+
+	Route{
+		"DellBulkReport",
+		"POST",
+		"/api/dusal/starfish_inbound/bulk_load_summary",
+		DellBulkSummaryHandler,
 	},
 
 	// - /api/sn_sc/servicecatalog/items/d92de7a4db120cd035453efd7c96191f/order_now
@@ -131,5 +145,19 @@ var routes = Routes{
 		"POST",
 		"/axl/",
 		ShowAxl,
+	},
+
+	Route{
+		"MegaGetEmployees",
+		"GET",
+		"/tenants/{tenantId}/employees",
+		GetMegaEmployees,
+	},
+
+	Route{
+		"MegaAddEmployee",
+		"POST",
+		"/tenants/{tenantId}/employees",
+		AddMegaEmployee,
 	},
 }
